@@ -7,7 +7,7 @@ import logger
 import platform
 from secrets import randbelow
 
-client = commands.Bot(command_prefix='$')
+client = commands.Bot(command_prefix='?')
 
 
 @client.event
@@ -20,8 +20,18 @@ async def on_ready():
     await client.change_presence(game=discord.Game(name='with packets'))
 
 
+# Generate a random roll
+@client.command(usage='[max]', brief='[max]')
+async def roll(ctx, *args):
+    if len(args) >= 1 and args[0].isdigit():
+        rnd = randbelow(int(args[0])) + 1
+    else:
+        rnd = randbelow(100) + 1
+    await ctx.send(f'{ctx.message.author.mention} rolled {rnd}!')
+
+
 # Get similar artists from last.fm
-@client.command()
+@client.command(usage='<artist> [limit]', brief='<artist> [limit]')
 async def similar(ctx, *args):
     # Log command and author
     ca_log = f'{ctx.message.content} invoked by {ctx.message.author}'
@@ -41,7 +51,7 @@ async def similar(ctx, *args):
 
 
 # Get top tracks for an artist from last.fm
-@client.command()
+@client.command(usage='<artist> [limit]', brief='<artist> [limit]')
 async def top(ctx, *args):
     # Log command and author
     ca_log = f'{ctx.message.content} invoked by {ctx.message.author}'
@@ -61,7 +71,7 @@ async def top(ctx, *args):
 
 
 # todo: handle 404 / fix error msg for invalid querries
-@client.command()
+@client.command(usage='<artist>', brief='<artist>')
 async def artist(ctx, *args):
     # Log command and author
     ca_log = f'{ctx.message.content} invoked by {ctx.message.author}'
@@ -85,7 +95,7 @@ async def artist(ctx, *args):
 
 
 # Search YouTube
-@client.command()
+@client.command(usage='<search> [result]', brief='<search> [result]')
 async def yt(ctx, *args):
     # Log command and author
     ca_log = f'{ctx.message.content} invoked by {ctx.message.author}'
