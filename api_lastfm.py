@@ -1,13 +1,13 @@
 import env_loader
 import requests
-from secrets import randbelow
+import logger
 
 API_URL = 'https://ws.audioscrobbler.com/2.0/'
 LASTFM_KEY = env_loader.LASTFM_KEY
 
 
-# Request a number of similar artists from last.fm
-def get_similar(artist,limit):
+# Get similar artists from last.fm
+def get_similar(artist, limit, ca_log):
 
     params = dict(
         method='artist.getsimilar',
@@ -16,38 +16,43 @@ def get_similar(artist,limit):
         format='json',
         limit=limit
     )
-
     response = requests.get(API_URL, params)
     data = response.json()
 
     try:
         similar = ', '.join(data['similarartists']['artist'][x]['name'] for x in range(limit))
-    except:
-        similar = 'Invalid querry.'
+    except Exception as e:
+        similar = logger.log(type(e).__name__, ca_log)
 
     return similar
 
-def get_top_tracks(artist, select):
+
+# Get top tracks for an artist from last.fm
+def get_top_tracks(artist, limit, ca_log, select = -1):
     params = dict(
         method='artist.gettoptracks',
         artist=artist,
         api_key=LASTFM_KEY,
         format='json'
     )
-
     response = requests.get(API_URL, params)
     data =response.json()
 
     try:
-        track = ', '.join(data['toptracks']['track'][x]['name'] for x in range(select))
-    except:
-        track = 'Out of range'
+        if select != -1:
+            track = data['toptracks']['track'][select]['name']
+        else:
+            track = ', '.join(data['toptracks']['track'][x]['name'] for x in range(limit))
+    except Exception as e:
+        track = logger.log(type(e).__name__, ca_log)
 
     return track
 
-# Link to last.fm wiki. No parsing is required
-def get_artist(artist, yt=0):
-    wiki_url = f'https://www.last.fm/music/{artist}/+wiki'
+
+# Link to last.fm wiki
+def get_artist(artist):
+    artist = artist.replace(' ', '+')
+    wiki_url = f'<https://www.last.fm/music/{artist}/+wiki>'
     return wiki_url
 
 
