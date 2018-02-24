@@ -52,7 +52,14 @@ def get_top_tracks(artist, limit, ca_log, select = -1):
 # Link to last.fm wiki
 def get_artist(artist):
     artist = artist.replace(' ', '+')
-    wiki_url = f'<https://www.last.fm/music/{artist}/+wiki>'
-    return wiki_url
+
+    wiki_url = f'https://www.last.fm/music/{artist}/+wiki'
+    response = requests.get(wiki_url)
+
+    if response.ok:
+        wiki_url = f'<https://www.last.fm/music/{artist}/+wiki>'
+        return wiki_url
+    else:
+        return 1
 
 

@@ -70,7 +70,7 @@ async def top(ctx, *args):
     await ctx.send(track)
 
 
-# todo: handle 404 / fix error msg for invalid querries
+# Link to last.fm and one of artist's top tracks from YouTube
 @client.command(usage='<artist>', brief='<artist>')
 async def artist(ctx, *args):
     # Log command and author
@@ -80,19 +80,20 @@ async def artist(ctx, *args):
         l_artist = api_lastfm.get_artist(args[0])
     except Exception as e:
         l_artist = logger.log(type(e).__name__, ca_log)
-        await  ctx.send(l_artist)
-    else:
-        # Link to artist wiki
         await ctx.send(l_artist)
-        # Select a random top 10 track
-        select = randbelow(10)
-        toptrack = api_lastfm.get_top_tracks(args[0], 10, ca_log, select)
-        # Search YouTube for Artist - Track
-        search = f'{args[0]} - {toptrack}'
-        link = api_youtube.search(search,ca_log,0)
-
-        await  ctx.send(link)
-
+    else:
+        if l_artist != 1:
+            # Link to artist wiki
+            await ctx.send(l_artist)
+            # Select a random top 10 track
+            select = randbelow(10)
+            toptrack = api_lastfm.get_top_tracks(args[0], 10, ca_log, select)
+            # Search YouTube for Artist - Track
+            search = f'{args[0]} - {toptrack}'
+            link = api_youtube.search(search,ca_log,0)
+            await ctx.send(link)
+        else:
+            await ctx.send('Artist not found.')
 
 # Search YouTube
 @client.command(usage='<search> [result]', brief='<search> [result]')
