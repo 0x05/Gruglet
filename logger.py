@@ -11,7 +11,7 @@ def log(exception, ca_log):
     elif exception == 'IndexError':
         err = 'Bad syntax.'
     else:
-        err = f'Unknown Exception (E: {exception})'
+        err = f'An exception occured [E: {exception}]'
 
     return err
 

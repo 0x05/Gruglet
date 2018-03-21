@@ -1,14 +1,12 @@
 import env_loader
 import requests
-import logger
 
 API_URL = 'https://ws.audioscrobbler.com/2.0/'
 LASTFM_KEY = env_loader.LASTFM_KEY
 
 
 # Get similar artists from last.fm
-def get_similar(artist, limit, ca_log):
-
+def get_similar(artist, limit):
     params = dict(
         method='artist.getsimilar',
         artist=artist,
@@ -17,18 +15,31 @@ def get_similar(artist, limit, ca_log):
         limit=limit
     )
     response = requests.get(API_URL, params)
-    data = response.json()
+    if response.ok:
+        data = response.json()
+        if 'error' in data:
+            return data['message']
+        else:
+            dnum = len(data['similarartists']['artist'])  # Number of items
 
-    try:
-        similar = ', '.join(data['similarartists']['artist'][x]['name'] for x in range(limit))
-    except Exception as e:
-        similar = logger.log(type(e).__name__, ca_log)
+            # Range check
+            if limit > dnum:
+                limit = dnum
+
+            similar = ''
+
+            if dnum > 0:
+                similar = ', '.join(data['similarartists']['artist'][x]['name'] for x in range(limit))
+            else:
+                similar = 'No similar artists in database'
+    else:
+        return response.status_code
 
     return similar
 
 
 # Get top tracks for an artist from last.fm
-def get_top_tracks(artist, limit, ca_log, select = -1):
+def get_top_tracks(artist, limit, select=-1):
     params = dict(
         method='artist.gettoptracks',
         artist=artist,
@@ -36,30 +47,76 @@ def get_top_tracks(artist, limit, ca_log, select = -1):
         format='json'
     )
     response = requests.get(API_URL, params)
-    data =response.json()
-
-    try:
-        if select != -1:
-            track = data['toptracks']['track'][select]['name']
+    if response.ok:
+        data = response.json()
+        if 'error' in data:
+            return data['message']
         else:
-            track = ', '.join(data['toptracks']['track'][x]['name'] for x in range(limit))
-    except Exception as e:
-        track = logger.log(type(e).__name__, ca_log)
+            dnum = len(data['toptracks']['track'])  # Number of items
+
+            # Range check
+            if limit > dnum:
+                limit = dnum
+
+            if select > dnum:
+                select = dnum
+
+            track = ''
+
+            if dnum > 0:
+                if select != -1:
+                    track = data['toptracks']['track'][select]['name']
+                else:
+                    track = ', '.join(data['toptracks']['track'][x]['name'] for x in range(limit))
+            else:
+                track = 'No top tracks in database'
+    else:
+        return response.status_code
 
     return track
+
+
+# Get top tracks for an artist from last.fm
+def get_top_albums(artist, limit, select=-1):
+    params = dict(
+        method='artist.gettopalbums',
+        artist=artist,
+        api_key=LASTFM_KEY,
+        format='json'
+    )
+    response = requests.get(API_URL, params)
+    if response.ok:
+        data = response.json()
+        if 'error' in data:
+            return data['message']
+        else:
+            dnum = len(data['topalbums']['album'])  # Number of items
+
+            # Range check
+            if limit > dnum:
+                limit = dnum
+
+            if select > dnum:
+                select = dnum
+
+            album = ''
+
+            if dnum > 0:
+                if select != -1:
+                    album = data['topalbums']['album'][select]['name']
+                else:
+                    album = ', '.join(data['topalbums']['album'][x]['name'] for x in range(limit))
+            else:
+                track = 'No top albums in database'
+    else:
+        return response.status_code
+
+    return album
 
 
 # Link to last.fm wiki
 def get_artist(artist):
     artist = artist.replace(' ', '+')
+    wiki_url = f'<https://www.last.fm/music/{artist}/+wiki>'
 
-    wiki_url = f'https://www.last.fm/music/{artist}/+wiki'
-    response = requests.get(wiki_url)
-
-    if response.ok:
-        wiki_url = f'<https://www.last.fm/music/{artist}/+wiki>'
-        return wiki_url
-    else:
-        return 1
-
-
+    return wiki_url
