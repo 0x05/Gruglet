@@ -17,7 +17,7 @@ async def on_ready():
     print(f'[*] Discord.py Version: {discord.__version__} | Python Version: {platform.python_version()}')
     print(f'[*] Invite {client.user.name}: '
           f'https://discordapp.com/oauth2/authorize?client_id={client.user.id}&scope=bot&permissions=8')
-    await client.change_presence(game=discord.Game(name='with packets'))
+    await client.change_presence(activity=discord.Game(name='?help'))
 
 
 # Generate a random roll
