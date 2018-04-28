@@ -107,7 +107,7 @@ def get_top_albums(artist, limit, select=-1):
                 else:
                     album = ', '.join(data['topalbums']['album'][x]['name'] for x in range(limit))
             else:
-                track = 'No top albums in database'
+                album = 'No top albums in database'
     else:
         return response.status_code
 
