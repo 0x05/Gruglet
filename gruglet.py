@@ -1,3 +1,4 @@
+import api_idex
 import api_lastfm
 import api_youtube
 import env_loader
@@ -90,6 +91,26 @@ async def ta(ctx, *args):
     await ctx.send(album)
 
 
+# Top tracks for a country from last.fm
+@client.command(usage='<country> [limit]', brief='<country> [limit]\t(Top Tracks)')
+async def mainstream(ctx, *args):
+    # Log command and author
+    ca_log = f'{ctx.message.content} invoked by {ctx.message.author}'
+    # Check limit
+    if len(args) > 1 and args[1].isdigit() and int(args[1]) > 0:
+        limit = args[1]
+    else:
+        # Default value if no argument is passed
+        limit = 5
+    # Attempt to query the API
+    try:
+        track = api_lastfm.geott(args[0], int(limit))
+    except Exception as e:
+        track = logger.log(type(e).__name__, ca_log)
+
+    await ctx.send(track)
+
+
 # Link to last.fm and one of artist's top tracks from YouTube
 @client.command(usage='<artist>', brief='<artist>\t\t\t(Artist Info)')
 async def artist(ctx, *args):
@@ -134,6 +155,19 @@ async def yt(ctx, *args):
         search = logger.log(type(e).__name__, ca_log)
 
     await ctx.send(search)
+
+
+# Return ticker from idex
+@client.command(usage='<ticker>', brief='<ticker>\t(Token Stats)')
+async def idex(ctx, *args):
+    # Log command and author
+    ca_log = f'{ctx.message.content} invoked by {ctx.message.author}'
+    try:
+        data = api_idex.returnTicker(args[0].upper())
+    except Exception as e:
+        data = logger.log(type(e).__name__, ca_log)
+
+    await ctx.send(data)
 
 
 client.run(env_loader.DISCORD_TOKEN)

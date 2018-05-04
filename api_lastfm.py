@@ -114,6 +114,44 @@ def get_top_albums(artist, limit, select=-1):
     return album
 
 
+# Get top tracks for a country from last.fm
+def geott(country, limit, select=-1):
+    params = dict(
+        method='geo.getTopTracks',
+        country=country,
+        api_key=LASTFM_KEY,
+        format='json'
+    )
+    response = requests.get(API_URL, params)
+    if response.ok:
+        data = response.json()
+        if 'error' in data:
+            return data['message']
+        else:
+            dnum = len(data['tracks']['track'])  # Number of items
+            
+            # Range check
+            if limit > dnum:
+                limit = dnum
+
+            if select > dnum:
+                select = dnum
+
+            track = ''
+
+            if dnum > 0:
+                if select != -1:
+                    track = data['tracks']['track'][select]['name']
+                else:
+                    track = ', '.join(data['tracks']['track'][x]['name'] for x in range(limit))
+            else:
+                track = 'No tracks for selected country in database'
+    else:
+        return response.status_code
+
+    return track
+
+
 # Link to last.fm wiki
 def get_artist(artist):
     artist = artist.replace(' ', '+')

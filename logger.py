@@ -7,9 +7,11 @@ def log(exception, ca_log):
     logging.info(f'Exception type: {exception} : {ca_log}')
 
     if exception == 'KeyError':
-        err = 'Bad request.'
+        err = 'Bad request'
     elif exception == 'IndexError':
-        err = 'Bad syntax.'
+        err = 'Bad syntax'
+    elif exception == 'JSONDecodeError':
+        err = 'Ticker not found'
     else:
         err = f'An exception occured [E: {exception}]'
 
