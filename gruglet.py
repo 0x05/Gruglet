@@ -31,6 +31,32 @@ async def roll(ctx, *args):
     await ctx.send(f'{ctx.message.author.mention} rolled {rnd}!')
 
 
+# Ask the 8 ball
+@client.command(usage='[Ask the 8-ball]', brief='[Ask the 8-ball]')
+async def  q(ctx, *args):
+    
+    rnd = randbelow(9)
+
+    if  rnd == 0:
+        await ctx.send("Most likely")
+    elif rnd == 1:
+        await ctx.send("Very doubtful")
+    elif rnd == 2:
+        await ctx.send("Better not tell you")
+    elif rnd == 3:
+        await ctx.send("As I see it, yes")
+    elif rnd == 4:
+        await ctx.send("My sources say no")
+    elif rnd == 5:
+        await ctx.send("Cannot predict now")
+    elif rnd == 6:
+        await ctx.send("Yes")
+    elif rnd == 7:
+        await ctx.send("Don't count on it")
+    elif rnd == 8:
+        await ctx.send("Without a doubt")
+
+
 # Get similar artists from last.fm
 @client.command(usage='<artist> [limit]', brief='<artist> [limit]\t(Similar Artists)')
 async def similar(ctx, *args):
