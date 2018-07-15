@@ -3,10 +3,8 @@ import requests
 API_URL = 'https://api.idex.market/returnTicker/'
 
 def returnTicker(ticker):
-   
-    #ticker = 'ETH_' + ticker
-   
-    print(f'{ticker}') #dbg
+      
+    #print(f'{ticker}') #dbg
   
     params = dict(
         market='ETH_' + ticker
@@ -15,12 +13,20 @@ def returnTicker(ticker):
     if response.ok:
         
         rdata = response.json()
-        print(f'{rdata}')
-        
+
+        last = rdata['last']
+        high = rdata['high']
+        low = rdata['low']
+        pc = rdata['percentChange']
+        vol = rdata['baseVolume']
+
+        fdata = f'`Last: {last:.10}\tHigh: {high:.10}\tLow: {low:.10}\tChange: {pc:.4}%\t Volume: {vol:.6}ETH`'
+
+        #print(f'{rdata}')
     else:
         if response.status_code == 504:
-            return 'Idex is a slow pos, try again'
+            return 'Idex is slow, try again'
         else:
             return response.status_code
 
-    return rdata
+    return fdata
